@@ -1,0 +1,279 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Traffic Management System - OS Project</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#07131d;color:#eaf4f8}
+header{padding:18px 28px;background:#0b1d29;border-bottom:1px solid #1d3a49;display:flex;justify-content:space-between;align-items:center}
+h1{margin:0;font-size:25px}.sub{color:#48e38a;margin-top:5px}.clock{background:#102a39;padding:12px 18px;border-radius:8px}
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 82px)}
+nav{padding:18px 12px;background:#081923;border-right:1px solid #183342}
+nav button{width:100%;padding:13px;margin:5px 0;background:transparent;color:#dceaf0;border:0;text-align:left;border-radius:7px;cursor:pointer}
+nav button:hover,nav button.active{background:#159447}
+main{padding:20px}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.card,.panel{background:#0b202c;border:1px solid #1b3b4a;border-radius:9px;padding:16px}
+.card b{display:block;font-size:24px;margin-top:8px}.green{color:#49e38a}.yellow{color:#f4c63d}.red{color:#ff5959}.blue{color:#68aef5}
+.grid{display:grid;grid-template-columns:1.5fr 1fr .8fr;gap:14px;margin-top:14px}.wide{grid-column:span 2}
+.map{height:310px;background:#102b36;position:relative;overflow:hidden;border-radius:7px}
+.road{position:absolute;height:14px;background:#536b72;transform:rotate(-18deg);width:120%;top:45%}
+.road.r2{transform:rotate(35deg);top:35%}.road.r3{transform:rotate(90deg);top:0;left:48%;width:14px;height:100%}
+.junction{position:absolute;width:22px;height:22px;border-radius:50%;background:#ff4444;border:3px solid #fff;cursor:pointer}
+.j1{left:45%;top:44%}.j2{left:20%;top:58%}.j3{right:18%;top:32%}
+.signal{display:flex;gap:10px;align-items:center;margin:12px 0}.light{width:16px;height:16px;border-radius:50%;background:#333}.on{background:#36d978;box-shadow:0 0 10px #36d978}
+input,select{width:100%;padding:9px;margin:5px 0 12px;background:#102b38;color:#fff;border:1px solid #315364;border-radius:5px}
+button.action{background:#159447;color:white;border:0;border-radius:5px;padding:10px 14px;cursor:pointer;margin:3px}
+.bar{height:12px;background:#183746;border-radius:10px;overflow:hidden}.fill{height:100%;background:#39d477}
+.alert{padding:9px;border-bottom:1px solid #21404d}.small{font-size:13px;color:#9db4be}
+table{width:100%;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #1e3b48;text-align:left}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.layout{grid-template-columns:1fr}nav{display:none}}
+</style>
+</head>
+<body>
+<header><div><h1>🚦 SMART TRAFFIC MANAGEMENT SYSTEM</h1><div class="sub">Operating System Project • Prototype</div></div><div class="clock" id="clock"></div></header>
+<div class="layout">
+<nav>
+<button class="active">🏠 Dashboard</button><button>📍 Live Traffic</button><button>🚦 Traffic Control</button><button>📊 Analytics</button><button>⚠️ Incidents</button><button>🔔 Alerts</button><button>⚙️ Settings</button>
+</nav>
+<main>
+<section class="cards">
+<div class="card">Traffic Status<b class="green" id="status">Normal</b><span class="small">All clear</span></div>
+<div class="card">Average Speed<b id="speed">32 km/h</b><span class="small">Live estimate</span></div>
+<div class="card">Congestion<b class="red" id="congestion">High</b><span class="small" id="hotspots">5 hotspots</span></div>
+<div class="card">Active Signals<b class="blue">24 / 45</b><span class="small">Online</span></div>
+<div class="card">Incidents<b id="incidentCount">2</b><span class="small">Reported</span></div>
+</section>
+
+<div class="grid">
+<div class="panel wide"><h3>🗺️ LIVE TRAFFIC MAP</h3><div class="map">
+<div class="road"></div><div class="road r2"></div><div class="road r3"></div>
+<div class="junction j1" title="Junction 12"></div><div class="junction j2" title="Junction 8"></div><div class="junction j3" title="Junction 21"></div>
+</div><p class="small">🟢 Smooth &nbsp; 🟡 Moderate &nbsp; 🔴 Heavy &nbsp; Click a junction to inspect it.</p></div>
+
+<div class="panel"><h3>🚦 SIGNAL CONTROL</h3>
+<label>Junction</label><select id="junction"><option>Junction 12</option><option>Junction 8</option><option>Junction 21</option></select>
+<label>Green time (sec)</label><input id="green" type="number" value="45">
+<label>Yellow time (sec)</label><input id="yellow" type="number" value="5">
+<label>Red time (sec)</label><input id="red" type="number" value="50">
+<button class="action" onclick="applySignal()">Apply Changes</button>
+<button class="action" onclick="optimize()">⚡ Auto Optimize</button>
+<div class="signal"><span class="light on"></span> Green <span id="gval">45s</span></div>
+<div class="signal"><span class="light"></span> Yellow <span id="yval">5s</span></div>
+<div class="signal"><span class="light"></span> Red <span id="rval">50s</span></div>
+</div>
+
+<div class="panel"><h3>📹 CAMERA FEED</h3><div style="height:190px;background:linear-gradient(145deg,#334d57,#14252c);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:52px">🚗🚕🚌</div><p class="small">Junction 12 • LIVE</p></div>
+
+<div class="panel"><h3>📊 TRAFFIC FLOW</h3><div id="bars"></div></div>
+<div class="panel"><h3>🔥 CONGESTION HOTSPOTS</h3><table><tr><th>Junction</th><th>Level</th></tr><tr><td>Junction 12</td><td class="red">High</td></tr><tr><td>Junction 8</td><td class="red">High</td></tr><tr><td>Junction 21</td><td class="yellow">Moderate</td></tr><tr><td>Junction 3</td><td class="yellow">Moderate</td></tr><tr><td>Junction 17</td><td class="green">Low</td></tr></table></div>
+<div class="panel"><h3>🧠 OS ARCHITECTURE</h3><p>Traffic Sensors / Cameras</p><p>↓</p><p><b>Operating System Core</b></p><p>• Process Management</p><p>• Memory Management</p><p>• I/O Management</p><p>• Device Management</p><p>↓</p><p>Traffic Signal Controller</p></div>
+
+<div class="panel wide"><h3>🔔 RECENT ALERTS</h3><div id="alerts"><div class="alert">10:20 AM 🔴 Congestion detected at Junction 12</div><div class="alert">10:18 AM 🟡 Accident reported near Junction 8</div></div></div>
+<div class="panel"><h3>💻 SYSTEM STATUS</h3>CPU<div class="bar"><div class="fill" style="width:45%"></div></div><br>Memory<div class="bar"><div class="fill" style="width:62%"></div></div><br>Disk<div class="bar"><div class="fill" style="width:38%"></div></div></div>
+</div>
+</main></div>
+<script>
+function clock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString()+" • "+new Date().toLocaleDateString()}setInterval(clock,1000);clock();
+function applySignal(){let g=+document.getElementById('green').value,y=+document.getElementById('yellow').value,r=+document.getElementById('red').value;document.getElementById('gval').textContent=g+'s';document.getElementById('yval').textContent=y+'s';document.getElementById('rval').textContent=r+'s';alert('Signal timing applied successfully!');}
+function optimize(){document.getElementById('green').value=60;document.getElementById('yellow').value=5;document.getElementById('red').value=35;applySignal();document.getElementById('congestion').textContent='Moderate';document.getElementById('hotspots').textContent='3 hotspots';document.getElementById('speed').textContent='38 km/h';document.getElementById('status').textContent='Optimized';}
+let vals=[35,52,68,85,72,58,44,63,78,51,39,56];document.getElementById('bars').innerHTML=vals.map((v,i)=>`<div style="display:flex;align-items:center;gap:8px;margin:7px 0"><span style="width:45px">${i+1}:00</span><div class="bar" style="flex:1"><div class="fill" style="width:${v}%"></div></div><span>${v}%</span></div>`).join('');
+document.querySelectorAll('.junction').forEach((j,i)=>j.onclick=()=>alert(['Junction 12: High traffic','Junction 8: Accident alert','Junction 21: Moderate traffic'][i]));
+</script>
+</body>
+</html>
+
+
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from traffic import TrafficManager
+
+app = Flask(__name__)
+CORS(app)
+
+traffic = TrafficManager()
+
+# Home
+@app.route("/")
+def home():
+    return jsonify({
+        "message": "Smart Traffic Management System Backend",
+        "status": "Running"
+    })
+
+
+# Get traffic information
+@app.route("/api/traffic", methods=["GET"])
+def get_traffic():
+    return jsonify(traffic.get_status())
+
+
+# Update vehicle count
+@app.route("/api/traffic", methods=["POST"])
+def update_traffic():
+    data = request.json
+
+    road = data.get("road")
+    vehicles = data.get("vehicles")
+
+    if road not in [1, 2, 3, 4]:
+        return jsonify({"error": "Road must be between 1 and 4"}), 400
+
+    if not isinstance(vehicles, int) or vehicles < 0:
+        return jsonify({"error": "Invalid vehicle count"}), 400
+
+    traffic.update_vehicles(road, vehicles)
+
+    return jsonify({
+        "message": "Traffic updated successfully",
+        "data": traffic.get_status()
+    })
+
+
+# Automatic traffic control
+@app.route("/api/control", methods=["POST"])
+def automatic_control():
+    result = traffic.select_signal()
+
+    return jsonify(result)
+
+
+# Emergency vehicle
+@app.route("/api/emergency", methods=["POST"])
+def emergency():
+    data = request.json
+    road = data.get("road")
+
+    if road not in [1, 2, 3, 4]:
+        return jsonify({"error": "Invalid road"}), 400
+
+    result = traffic.emergency_priority(road)
+
+    return jsonify(result)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
+
+
+
+class TrafficManager:
+
+    def __init__(self):
+        self.vehicles = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0
+        }
+
+        self.signal = {
+            1: "RED",
+            2: "RED",
+            3: "RED",
+            4: "RED"
+        }
+
+    def update_vehicles(self, road, vehicles):
+        self.vehicles[road] = vehicles
+
+    def get_status(self):
+        return {
+            "vehicles": self.vehicles,
+            "signal": self.signal
+        }
+
+    def select_signal(self):
+
+        # Find road with maximum traffic
+        road = max(self.vehicles, key=self.vehicles.get)
+
+        # Make all signals RED
+        for r in self.signal:
+            self.signal[r] = "RED"
+
+        # Give GREEN signal to highest traffic road
+        self.signal[road] = "GREEN"
+
+        return {
+            "message": "Automatic signal selected",
+            "green_road": road,
+            "signal": self.signal
+        }
+
+    def emergency_priority(self, road):
+
+        # Make all signals RED
+        for r in self.signal:
+            self.signal[r] = "RED"
+
+        # Emergency road gets GREEN
+        self.signal[road] = "GREEN"
+
+        return {
+            "message": "Emergency priority activated",
+            "emergency_road": road,
+            "signal": self.signal
+        }
+
+
+
+-- Create Database
+CREATE DATABASE smart_traffic;
+
+USE smart_traffic;
+
+-- Traffic information
+CREATE TABLE traffic (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    road INT NOT NULL,
+    vehicle_count INT NOT NULL,
+    signal_status VARCHAR(10) NOT NULL,
+    emergency BOOLEAN DEFAULT FALSE,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert sample traffic data
+INSERT INTO traffic
+(road, vehicle_count, signal_status, emergency)
+VALUES
+(1, 15, 'RED', FALSE),
+(2, 8, 'RED', FALSE),
+(3, 25, 'GREEN', FALSE),
+(4, 5, 'RED', FALSE);
+
+-- View all traffic data
+SELECT * FROM traffic;
+
+-- Find road with highest traffic
+SELECT *
+FROM traffic
+WHERE vehicle_count = (
+    SELECT MAX(vehicle_count)
+    FROM traffic
+);
+
+-- Find emergency vehicles
+SELECT *
+FROM traffic
+WHERE emergency = TRUE;
+
+-- Update traffic count
+UPDATE traffic
+SET vehicle_count = 30
+WHERE road = 3;
+
+-- Change signal
+UPDATE traffic
+SET signal_status = 'GREEN'
+WHERE road = 3;
+
+-- Delete a traffic record
+DELETE FROM traffic
+WHERE id = 1;

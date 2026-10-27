@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Traffic Management System - OS Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-main: #07131d;
+  --bg-card: #0b202c;
+  --bg-card-hover: #102d3e;
+  --bg-nav: #081923;
+  --border-color: #1b3b4a;
+  --text-main: #eaf4f8;
+  --text-dim: #8faec0;
+  --accent-green: #36d978;
+  --accent-yellow: #f4c63d;
+  --accent-red: #ff5252;
+  --accent-blue: #4ea8de;
+  --accent-purple: #9d4edd;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 16px 28px;
+  background: #0b1d29;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-icon {
+  font-size: 30px;
+  filter: drop-shadow(0 0 10px rgba(54, 217, 120, 0.4));
+}
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #ffffff, #88d49e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sub {
+  color: var(--accent-green);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.badge-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(54, 217, 120, 0.15);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+}
+.badge-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 10px var(--accent-green);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+.clock {
+  background: #102a39;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  border: 1px solid #1c455c;
+  color: #a5d8f3;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  flex: 1;
+}
+
+nav {
+  padding: 20px 14px;
+  background: var(--bg-nav);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+nav button {
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+nav button:hover {
+  background: rgba(21, 148, 71, 0.15);
+  color: var(--text-main);
+  border-color: rgba(54, 217, 120, 0.3);
+}
+nav button.active {
+  background: linear-gradient(135deg, #159447, #0e6e33);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(21, 148, 71, 0.4);
+}
+
+main {
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+.card, .panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 18px;
+  transition: transform 0.2s, border-color 0.2s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.card:hover, .panel:hover {
+  border-color: #2b5d75;
+}
+.card-title {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.card b {
+  display: block;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 6px 0 2px 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+.small {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.green { color: var(--accent-green) !important; }
+.yellow { color: var(--accent-yellow) !important; }
+.red { color: var(--accent-red) !important; }
+.blue { color: var(--accent-blue) !important; }
+.purple { color: var(--accent-purple) !important; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 0.9fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.wide {
+  grid-column: span 2;
+}
+
+.panel h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c7e5f5;
+  border-bottom: 1px solid #163647;
+  padding-bottom: 8px;
+}
+
+/* Map & Junctions */
+.map {
+  height: 290px;
+  background: radial-gradient(circle at center, #133443 0%, #0c202a 100%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid #204658;
+}
+.road {
+  position: absolute;
+  height: 22px;
+  background: #39515d;
+  transform: rotate(-18deg);
+  width: 120%;
+  top: 45%;
+  border-top: 2px dashed #9cb6c5;
+  border-bottom: 2px dashed #9cb6c5;
+}
+.road.r2 {
+  transform: rotate(35deg);
+  top: 35%;
+}
+.road.r3 {
+  transform: rotate(90deg);
+  top: 0;
+  left: 48%;
+  width: 22px;
+  height: 100%;
+}
+.junction {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  border: 3px solid #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  box-shadow: 0 0 15px var(--accent-red);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 10;
+}
+.junction:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 25px rgba(255,255,255,0.8);
+}
+.junction.green-sig {
+  background: var(--accent-green) !important;
+  box-shadow: 0 0 15px var(--accent-green) !important;
+}
+.junction.yellow-sig {
+  background: var(--accent-yellow) !important;
+  box-shadow: 0 0 15px var(--accent-yellow) !important;
+}
+.j1 { left: 45%; top: 43%; }
+.j2 { left: 20%; top: 56%; }
+.j3 { right: 20%; top: 30%; }
+.j4 { left: 58%; top: 70%; }
+
+/* Signals Display */
+.signals-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+  background: #071923;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #163647;
+}
+.signal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #0b2230;
+}
+.signal-indicator {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.light {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #25333d;
+  transition: all 0.3s ease;
+}
+.light.on.green-light {
+  background: var(--accent-green);
+  box-shadow: 0 0 12px var(--accent-green);
+}
+.light.on.yellow-light {
+  background: var(--accent-yellow);
+  box-shadow: 0 0 12px var(--accent-yellow);
+}
+.light.on.red-light {
+  background: var(--accent-red);
+  box-shadow: 0 0 12px var(--accent-red);
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+input, select {
+  width: 100%;
+  padding: 9px 12px;
+  background: #102b38;
+  color: #fff;
+  border: 1px solid #284c5e;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+input:focus, select:focus {
+  border-color: var(--accent-green);
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+button.action {
+  flex: 1;
+  background: linear-gradient(135deg, #159447, #117839);
+  color: white;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+button.action:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+button.action:active {
+  transform: translateY(1px);
+}
+button.secondary {
+  background: #17384a;
+  border: 1px solid #28546d;
+}
+button.secondary:hover {
+  background: #1e475e;
+}
+button.danger {
+  background: linear-gradient(135deg, #d32f2f, #9a0007);
+}
+
+/* Road Density sliders */
+.road-control-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.road-control-item input[type="range"] {
+  flex: 1;
+  margin: 0;
+  cursor: pointer;
+}
+
+.bar {
+  height: 10px;
+  background: #163647;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: var(--accent-green);
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.alert-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #0d2736;
+  border-left: 4px solid #1e5977;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alert-item.crit { border-left-color: var(--accent-red); }
+.alert-item.warn { border-left-color: var(--accent-yellow); }
+.alert-item.info { border-left-color: var(--accent-green); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+td, th {
+  padding: 8px 10px;
+  border-bottom: 1px solid #183a4c;
+  text-align: left;
+  font-size: 13px;
+}
+th {
+  color: var(--text-dim);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.os-flow {
+  background: #081a25;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  border: 1px solid #163647;
+}
+.os-tag {
+  display: inline-block;
+  background: #123447;
+  color: #79c5ea;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  margin: 2px 0;
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #123a4f;
+  color: #fff;
+  border: 1px solid var(--accent-green);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  font-size: 13px;
+  display: none;
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+}
+
+/* Login screen */
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(54, 217, 120, 0.13), transparent 28%),
+    radial-gradient(circle at 85% 80%, rgba(78, 168, 222, 0.12), transparent 30%),
+    var(--bg-main);
+}
+.login-card {
+  width: min(100%, 430px);
+  padding: 34px;
+  background: rgba(11, 32, 44, 0.96);
+  border: 1px solid #28546d;
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  animation: loginRise 0.45s ease both;
+}
+@keyframes loginRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.login-brand .brand-icon { font-size: 34px; }
+.login-brand h1 {
+  font-size: 17px;
+  line-height: 1.2;
+}
+.login-kicker {
+  color: var(--accent-green);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.login-card h2 {
+  font-size: 25px;
+  margin-bottom: 7px;
+}
+.login-copy {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 76px; }
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--accent-blue);
+  cursor: pointer;
+  font: 500 11px 'Outfit', sans-serif;
+}
+.login-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 0 20px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  cursor: pointer;
+}
+.remember-me input { width: auto; accent-color: var(--accent-green); }
+.login-submit { width: 100%; padding: 12px !important; }
+.login-error {
+  min-height: 18px;
+  color: var(--accent-red);
+  font-size: 12px;
+  margin-top: 12px;
+  text-align: center;
+}
+.login-hint {
+  border-top: 1px solid #163647;
+  color: var(--text-dim);
+  font-size: 11px;
+  margin-top: 22px;
+  padding-top: 16px;
+  text-align: center;
+}
+.login-hint strong { color: #c7e5f5; font-family: 'JetBrains Mono', monospace; }
+.app-shell { display: none; flex-direction: column; min-height: 100vh; }
+.app-shell.visible { display: flex; }
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media(max-width: 1080px) {
+  .cards { grid-template-columns: repeat(3, 1fr); }
+  .grid { grid-template-columns: 1fr; }
+  .wide { grid-column: auto; }
+}
+@media(max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  nav { display: none; }
+  .cards { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<section class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-icon">🚦</div>
+      <div>
+        <h1>SMART TRAFFIC<br>MANAGEMENT SYSTEM</h1>
+      </div>
+    </div>
+    <div class="login-kicker">SECURE CONTROL CONSOLE</div>
+    <h2>Welcome back</h2>
+    <p class="login-copy">Sign in to monitor intersections, manage signals, and respond to emergencies.</p>
+    <form id="loginForm">
+      <label for="username">Operator ID</label>
+      <input id="username" name="username" type="text" placeholder="Enter operator ID" autocomplete="username" required>
+      <label for="password">Access password</label>
+      <div class="password-wrap">
+        <input id="password" name="password" type="password" placeholder="Enter password" autocomplete="current-password" required>
+        <button class="password-toggle" id="passwordToggle" type="button">Show</button>
+      </div>
+      <div class="login-options">
+        <label class="remember-me"><input id="rememberMe" type="checkbox"> Remember this session</label>
+        <span>Protected connection</span>
+      </div>
+      <button class="action login-submit" type="submit">Sign in to dashboard</button>
+      <p class="login-error" id="loginError" role="alert" aria-live="polite"></p>
+    </form>
+    <p class="login-hint">Demo access: <strong>admin</strong> / <strong>traffic123</strong></p>
+  </div>
+</section>
+
+<div class="app-shell" id="appShell">
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🚦</div>
+    <div>
+      <h1>SMART TRAFFIC MANAGEMENT SYSTEM</h1>
+      <div class="sub">Operating Systems Project • Real-Time Synchronization & Scheduling Engine</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge-status" id="backendBadge">
+      <div class="badge-pulse" id="backendDot"></div>
+      <span id="backendStatus">CHECKING BACKEND...</span>
+    </div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav>
+    <button class="active" onclick="switchNav(this)">🏠 Dashboard</button>
+    <button onclick="switchNav(this)">📍 Live Traffic Map</button>
+    <button onclick="switchNav(this)">🚦 Signal Controller</button>
+    <button onclick="switchNav(this)">🚨 Emergency Override</button>
+    <button onclick="switchNav(this)">📊 Flow Analytics</button>
+    <button onclick="switchNav(this)">🧠 OS Architecture</button>
+    <button onclick="switchNav(this)">🔔 System Logs</button>
+  </nav>
+
+  <main>
+    <!-- Metric Cards -->
+    <section class="cards">
+      <div class="card">
+        <span class="card-title">System Status</span>
+        <b class="green" id="status">Normal</b>
+        <span class="small" id="schedAlgo">OS Scheduler: Priority SJF</span>
+      </div>
+      <div class="card">
+        <span class="card-title">Average Speed</span>
+        <b id="speed">38 km/h</b>
+        <span class="small">Real-time compute</span>
+      </div>
+      <div class="card">
+        <span class="card-title">Congestion Index</span>
+        <b class="yellow" id="congestion">Moderate</b>
+        <span class="small" id="hotspots">2 active hotspots</span>
+      </div>
+      <div class="card">
+        <span class="card-title">Active Signals</span>
+        <b class="blue" id="sigOnline">4 / 4 Roads</b>
+        <span class="small">Sync Locks OK</span>
+      </div>
+      <div class="card">
+        <span class="card-title">Emergency Vehicles</span>
+        <b class="red" id="emergencyCount">0</b>
+        <span class="small">Preemption queue</span>
+      </div>
+    </section>
+
+    <!-- Main Grid -->
+    <div class="grid">
+      <!-- Live Map -->
+      <div class="panel wide">
+        <h3>🗺️ REAL-TIME ROAD INTERSECTION MAP</h3>
+        <div class="map" id="mapContainer">
+          <div class="road"></div>
+          <div class="road r2"></div>
+          <div class="road r3"></div>
+          <div class="junction j1 green-sig" id="node1" title="Road 1 Intersection" onclick="inspectJunction(1)">R1</div>
+          <div class="junction j2" id="node2" title="Road 2 Intersection" onclick="inspectJunction(2)">R2</div>
+          <div class="junction j3" id="node3" title="Road 3 Intersection" onclick="inspectJunction(3)">R3</div>
+          <div class="junction j4" id="node4" title="Road 4 Intersection" onclick="inspectJunction(4)">R4</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+          <p class="small">🟢 GREEN (Active) &nbsp; 🟡 YELLOW &nbsp; 🔴 RED (Blocked) &nbsp; • Click any junction to inspect</p>
+          <button class="action" style="padding:5px 12px; font-size:11px;" onclick="randomizeTraffic()">🎲 Simulate Traffic Surge</button>
+        </div>
+      </div>
+
+      <!-- Signal Control -->
+      <div class="panel">
+        <h3>🚦 REAL-TIME SIGNAL CONTROL</h3>
+        <label>Selected Intersection / Road</label>
+        <select id="junction" onchange="loadJunctionValues()">
+          <option value="1">Road 1 (North Ave)</option>
+          <option value="2">Road 2 (South Blvd)</option>
+          <option value="3">Road 3 (East Expressway)</option>
+          <option value="4">Road 4 (West Ring Road)</option>
+        </select>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+          <div>
+            <label>Green (s)</label>
+            <input id="green" type="number" value="45" min="5" max="120">
+          </div>
+          <div>
+            <label>Yellow (s)</label>
+            <input id="yellow" type="number" value="5" min="2" max="15">
+          </div>
+          <div>
+            <label>Red (s)</label>
+            <input id="red" type="number" value="50" min="5" max="120">
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="action" onclick="applySignal()">Apply Timing</button>
+          <button class="action secondary" onclick="autoOptimize()">⚡ Auto Algorithm</button>
+        </div>
+
+        <div class="signals-container">
+          <div class="signal-row">
+            <span>Road 1 (North)</span>
+            <div class="signal-indicator">
+              <span class="light on green-light" id="sig-r1"></span>
+              <span style="font-family:'JetBrains Mono'; font-size:12px;" id="val-r1">GREEN (45s)</span>
+            </div>
+          </div>
+          <div class="signal-row">
+            <span>Road 2 (South)</span>
+            <div class="signal-indicator">
+              <span class="light on red-light" id="sig-r2"></span>
+              <span style="font-family:'JetBrains Mono'; font-size:12px;" id="val-r2">RED</span>
+            </div>
+          </div>
+          <div class="signal-row">
+            <span>Road 3 (East)</span>
+            <div class="signal-indicator">
+              <span class="light on red-light" id="sig-r3"></span>
+              <span style="font-family:'JetBrains Mono'; font-size:12px;" id="val-r3">RED</span>
+            </div>
+          </div>
+          <div class="signal-row">
+            <span>Road 4 (West)</span>
+            <div class="signal-indicator">
+              <span class="light on red-light" id="sig-r4"></span>
+              <span style="font-family:'JetBrains Mono'; font-size:12px;" id="val-r4">RED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Camera Feed -->
+      <div class="panel">
+        <h3>📹 LIVE AI CAMERA SENSOR</h3>
+        <div style="height:175px; background:linear-gradient(145deg,#183748,#0d1e28); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #234b60; position:relative; overflow:hidden;">
+          <div style="position:absolute; top:8px; left:8px; font-size:10px; background:rgba(255,0,0,0.7); padding:2px 6px; border-radius:3px; font-weight:bold;">● REC</div>
+          <div style="position:absolute; top:8px; right:8px; font-size:10px; color:#88e39f; font-family:'JetBrains Mono';">FPS: 60</div>
+          <div id="camVehicles" style="font-size:42px; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5)); transition:transform 0.3s;">🚗 🚙 🚕 🚌</div>
+          <div style="margin-top:10px; font-size:12px; color:#b1d8ed;">Road <span id="camRoad">1</span> AI Vehicle Count: <b id="camCount" style="color:var(--accent-green)">28</b></div>
+        </div>
+        <p class="small" style="margin-top:8px;">Optical recognition feed fed directly into OS Process I/O ring buffer.</p>
+      </div>
+
+      <!-- Road Density Controls -->
+      <div class="panel">
+        <h3>🚦 VEHICLE QUEUE DENSITY (ROADS)</h3>
+        <div class="road-control-item">
+          <span>Road 1</span>
+          <input type="range" id="v_road1" min="0" max="60" value="28" oninput="updateRoadVehicles(1, this.value)">
+          <span style="font-family:'JetBrains Mono'; width:32px; text-align:right" id="cnt_r1">28</span>
+        </div>
+        <div class="road-control-item">
+          <span>Road 2</span>
+          <input type="range" id="v_road2" min="0" max="60" value="12" oninput="updateRoadVehicles(2, this.value)">
+          <span style="font-family:'JetBrains Mono'; width:32px; text-align:right" id="cnt_r2">12</span>
+        </div>
+        <div class="road-control-item">
+          <span>Road 3</span>
+          <input type="range" id="v_road3" min="0" max="60" value="45" oninput="updateRoadVehicles(3, this.value)">
+          <span style="font-family:'JetBrains Mono'; width:32px; text-align:right" id="cnt_r3">45</span>
+        </div>
+        <div class="road-control-item">
+          <span>Road 4</span>
+          <input type="range" id="v_road4" min="0" max="60" value="8" oninput="updateRoadVehicles(4, this.value)">
+          <span style="font-family:'JetBrains Mono'; width:32px; text-align:right" id="cnt_r4">8</span>
+        </div>
+        
+        <div style="margin-top:14px;">
+          <label>🚨 TRIGGER EMERGENCY VEHICLE (PREEMPTION):</label>
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:5px;">
+            <button class="action danger" style="padding:6px; font-size:11px;" onclick="triggerEmergency(1)">🚑 R1</button>
+            <button class="action danger" style="padding:6px; font-size:11px;" onclick="triggerEmergency(2)">🚒 R2</button>
+            <button class="action danger" style="padding:6px; font-size:11px;" onclick="triggerEmergency(3)">🚓 R3</button>
+            <button class="action danger" style="padding:6px; font-size:11px;" onclick="triggerEmergency(4)">🚑 R4</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Traffic Flow -->
+      <div class="panel">
+        <h3>📊 HOURLY TRAFFIC LOAD</h3>
+        <div id="bars"></div>
+      </div>
+
+      <!-- Hotspots Table -->
+      <div class="panel">
+        <h3>🔥 CONGESTION HOTSPOTS</h3>
+        <table>
+          <thead>
+            <tr><th>Junction</th><th>Vehicles</th><th>Status</th></tr>
+          </thead>
+          <tbody id="hotspotTable">
+            <tr><td>Road 3 (East)</td><td>45</td><td class="red">Heavy</td></tr>
+            <tr><td>Road 1 (North)</td><td>28</td><td class="yellow">Moderate</td></tr>
+            <tr><td>Road 2 (South)</td><td>12</td><td class="green">Smooth</td></tr>
+            <tr><td>Road 4 (West)</td><td>8</td><td class="green">Smooth</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- OS Architecture -->
+      <div class="panel">
+        <h3>🧠 OS CONCEPTS APPLIED</h3>
+        <div class="os-flow">
+          <div><span class="os-tag">CPU Scheduling</span> Priority-based Preemptive scheduling gives Green to highest density or emergency vehicle.</div>
+          <div style="margin-top:6px;"><span class="os-tag">Process Sync</span> Mutex & Semaphores prevent green conflicts at conflicting intersections.</div>
+          <div style="margin-top:6px;"><span class="os-tag">Inter-Process Comms</span> IPC pipes stream sensor camera readings into decision engine.</div>
+          <div style="margin-top:6px;"><span class="os-tag">Preemption</span> Emergency vehicles interrupt currently running green cycles instantly.</div>
+        </div>
+      </div>
+
+      <!-- Recent Alerts -->
+      <div class="panel wide">
+        <h3>🔔 SYSTEM ACTIVITY & EVENT LOG</h3>
+        <div class="alert-list" id="alerts">
+          <div class="alert-item info"><span>System initialized: Real-Time Traffic OS Manager started</span><span class="small">10:00:00</span></div>
+          <div class="alert-item warn"><span>Road 3 vehicle count reached 45 (Moderate congestion alert)</span><span class="small">10:02:15</span></div>
+          <div class="alert-item crit"><span>Auto-optimizer evaluated priority weights for Road 3</span><span class="small">10:04:30</span></div>
+        </div>
+      </div>
+
+      <!-- System Health -->
+      <div class="panel">
+        <h3>💻 OS KERNEL RESOURCE USAGE</h3>
+        <div style="font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <span>CPU Scheduler Load</span><span id="cpuVal">24%</span>
+        </div>
+        <div class="bar"><div class="fill" id="cpuBar" style="width:24%"></div></div>
+        
+        <div style="font-size:12px; margin:10px 0 4px; display:flex; justify-content:space-between;">
+          <span>Shared Memory Buffer</span><span id="memVal">48%</span>
+        </div>
+        <div class="bar"><div class="fill" id="memBar" style="width:48%"></div></div>
+        
+        <div style="font-size:12px; margin:10px 0 4px; display:flex; justify-content:space-between;">
+          <span>I/O Semaphore Queue</span><span id="ioVal">18%</span>
+        </div>
+        <div class="bar"><div class="fill" id="ioBar" style="width:18%"></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toast">Signal updated!</div>
+
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:5000";
+let backendOnline = false;
+
+// Local demo authentication for the client-only project.
+const LOGIN_KEY = 'trafficOsAuthenticated';
+const loginScreen = document.getElementById('loginScreen');
+const appShell = document.getElementById('appShell');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+
+function showDashboard() {
+  loginScreen.style.display = 'none';
+  appShell.classList.add('visible');
+}
+
+if (sessionStorage.getItem(LOGIN_KEY) === 'true') {
+  showDashboard();
+}
+
+loginForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (username === 'admin' && password === 'traffic123') {
+    if (document.getElementById('rememberMe').checked) {
+      sessionStorage.setItem(LOGIN_KEY, 'true');
+    }
+    loginError.textContent = '';
+    showDashboard();
+    return;
+  }
+
+  loginError.textContent = 'Invalid operator ID or password.';
+});
+
+document.getElementById('passwordToggle').addEventListener('click', (event) => {
+  const passwordInput = document.getElementById('password');
+  const isPassword = passwordInput.type === 'password';
+  passwordInput.type = isPassword ? 'text' : 'password';
+  event.currentTarget.textContent = isPassword ? 'Hide' : 'Show';
+});
+
+// State
+const state = {
+  vehicles: { 1: 28, 2: 12, 3: 45, 4: 8 },
+  signal: { 1: "GREEN", 2: "RED", 3: "RED", 4: "RED" },
+  timings: {
+    1: { green: 45, yellow: 5, red: 50 },
+    2: { green: 30, yellow: 5, red: 60 },
+    3: { green: 55, yellow: 5, red: 40 },
+    4: { green: 25, yellow: 5, red: 65 }
+  },
+  activeJunction: 1,
+  emergencyRoad: null
+};
+
+// Check backend connectivity
+async function checkBackend() {
+  try {
+    const res = await fetch(`${API_BASE}/`, { method: "GET" });
+    if (res.ok) {
+      backendOnline = true;
+      document.getElementById('backendStatus').textContent = "FLASK BACKEND CONNECTED (PORT 5000)";
+      document.getElementById('backendBadge').style.borderColor = "var(--accent-green)";
+      document.getElementById('backendBadge').style.color = "var(--accent-green)";
+      document.getElementById('backendDot').style.background = "var(--accent-green)";
+    }
+  } catch(e) {
+    backendOnline = false;
+    document.getElementById('backendStatus').textContent = "STANDALONE CLIENT MODE";
+    document.getElementById('backendBadge').style.borderColor = "var(--accent-yellow)";
+    document.getElementById('backendBadge').style.color = "var(--accent-yellow)";
+    document.getElementById('backendDot').style.background = "var(--accent-yellow)";
+  }
+}
+setInterval(checkBackend, 4000);
+checkBackend();
+
+// Clock
+function updateClock() {
+  const d = new Date();
+  document.getElementById('clock').textContent = d.toLocaleTimeString() + " • " + d.toLocaleDateString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Navigation Tabs
+function switchNav(btn) {
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showToast(`Switched to: ${btn.textContent.trim()}`);
+}
+
+// Toast
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 2600);
+}
+
+// Add alert log
+function addLog(msg, type = 'info') {
+  const container = document.getElementById('alerts');
+  const d = new Date();
+  const timeStr = d.toLocaleTimeString();
+  const div = document.createElement('div');
+  div.className = `alert-item ${type}`;
+  div.innerHTML = `<span>${msg}</span><span class="small">${timeStr}</span>`;
+  container.prepend(div);
+}
+
+// Update Road Vehicles
+async function updateRoadVehicles(road, val) {
+  state.vehicles[road] = parseInt(val, 10);
+  document.getElementById(`cnt_r${road}`).textContent = val;
+  updateUI();
+
+  if (backendOnline) {
+    try {
+      await fetch(`${API_BASE}/api/traffic`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ road: parseInt(road, 10), vehicles: parseInt(val, 10) })
+      });
+    } catch(e) {
+      console.warn("Backend sync failed", e);
+    }
+  }
+}
+
+// Inspect Junction
+function inspectJunction(road) {
+  state.activeJunction = road;
+  document.getElementById('junction').value = road;
+  loadJunctionValues();
+  document.getElementById('camRoad').textContent = road;
+  document.getElementById('camCount').textContent = state.vehicles[road];
+  showToast(`Inspecting Road ${road}: ${state.vehicles[road]} vehicles queued`);
+}
+
+function loadJunctionValues() {
+  const r = document.getElementById('junction').value;
+  state.activeJunction = r;
+  const t = state.timings[r];
+  document.getElementById('green').value = t.green;
+  document.getElementById('yellow').value = t.yellow;
+  document.getElementById('red').value = t.red;
+  document.getElementById('camRoad').textContent = r;
+  document.getElementById('camCount').textContent = state.vehicles[r];
+}
+
+// Apply Signal timing
+function applySignal() {
+  const r = document.getElementById('junction').value;
+  const g = parseInt(document.getElementById('green').value, 10);
+  const y = parseInt(document.getElementById('yellow').value, 10);
+  const rd = parseInt(document.getElementById('red').value, 10);
+  
+  state.timings[r] = { green: g, yellow: y, red: rd };
+  showToast(`Timing for Road ${r} applied: Green=${g}s, Yellow=${y}s, Red=${rd}s`);
+  addLog(`Signal timing updated manually for Road ${r} (G:${g}s, Y:${y}s, R:${rd}s)`, 'info');
+  updateUI();
+}
+
+// Automatic Signal Optimization (OS Priority Scheduler)
+async function autoOptimize() {
+  if (backendOnline) {
+    try {
+      const res = await fetch(`${API_BASE}/api/control`, { method: "POST" });
+      const data = await res.json();
+      if (data.signal) {
+        state.signal = data.signal;
+        const maxRoad = data.green_road;
+        showToast(`⚡ Flask API: Road ${maxRoad} given GREEN priority`);
+        addLog(`⚡ Flask API Controller: Road ${maxRoad} granted mutex GREEN lock`, 'info');
+        updateUI();
+        return;
+      }
+    } catch(e) {
+      console.warn("Backend call failed, using client scheduler", e);
+    }
+  }
+
+  // Fallback client scheduler
+  let maxRoad = 1;
+  let maxVal = -1;
+  for (let r in state.vehicles) {
+    if (state.vehicles[r] > maxVal) {
+      maxVal = state.vehicles[r];
+      maxRoad = parseInt(r, 10);
+    }
+  }
+
+  for (let r in state.signal) {
+    state.signal[r] = "RED";
+  }
+  state.signal[maxRoad] = "GREEN";
+  state.emergencyRoad = null;
+  document.getElementById('emergencyCount').textContent = '0';
+
+  showToast(`⚡ OS Scheduler: Road ${maxRoad} given GREEN priority (${maxVal} vehicles)`);
+  addLog(`⚡ OS Scheduler Priority Switch: Road ${maxRoad} granted mutex GREEN lock (${maxVal} vehicles)`, 'info');
+  updateUI();
+}
+
+// Emergency Vehicle Preemption
+async function triggerEmergency(road) {
+  if (backendOnline) {
+    try {
+      const res = await fetch(`${API_BASE}/api/emergency`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ road: parseInt(road, 10) })
+      });
+      const data = await res.json();
+      if (data.signal) {
+        state.signal = data.signal;
+      }
+    } catch(e) {
+      console.warn("Emergency API call failed", e);
+    }
+  }
+
+  for (let r in state.signal) {
+    state.signal[r] = "RED";
+  }
+  state.signal[road] = "GREEN";
+  state.emergencyRoad = road;
+  
+  document.getElementById('emergencyCount').textContent = '1';
+  showToast(`🚨 EMERGENCY PREEMPTION: Road ${road} forced to GREEN!`);
+  addLog(`🚨 EMERGENCY OVERRIDE: Process interrupt triggered for Road ${road}. All other signals preempted to RED!`, 'crit');
+  updateUI();
+}
+
+// Randomize Traffic
+async function randomizeTraffic() {
+  for (let r = 1; r <= 4; r++) {
+    const val = Math.floor(Math.random() * 55) + 5;
+    state.vehicles[r] = val;
+    document.getElementById(`v_road${r}`).value = val;
+    document.getElementById(`cnt_r${r}`).textContent = val;
+
+    if (backendOnline) {
+      fetch(`${API_BASE}/api/traffic`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ road: r, vehicles: val })
+      }).catch(() => {});
+    }
+  }
+  showToast('🎲 Random traffic surge injected across all roads!');
+  addLog('Traffic sensor simulator: Random vehicle surge injected across grid', 'warn');
+  autoOptimize();
+}
+
+// Update UI
+function updateUI() {
+  // Update map junction lights
+  for (let r = 1; r <= 4; r++) {
+    const node = document.getElementById(`node${r}`);
+    const sigLight = document.getElementById(`sig-r${r}`);
+    const sigVal = document.getElementById(`val-r${r}`);
+
+    node.className = 'junction j' + r;
+    sigLight.className = 'light on';
+
+    if (state.signal[r] === 'GREEN') {
+      node.classList.add('green-sig');
+      sigLight.classList.add('green-light');
+      sigVal.textContent = `GREEN (${state.timings[r]?.green || 45}s)`;
+    } else {
+      sigLight.classList.add('red-light');
+      sigVal.textContent = 'RED';
+    }
+  }
+
+  // Update stats
+  const totalVehicles = Object.values(state.vehicles).reduce((a, b) => a + b, 0);
+  const avgSpeed = Math.max(15, Math.min(65, Math.round(75 - totalVehicles * 0.5)));
+  document.getElementById('speed').textContent = `${avgSpeed} km/h`;
+
+  let cong = "Low";
+  let congClass = "green";
+  let hotspotsCount = 0;
+
+  if (totalVehicles > 90) {
+    cong = "Heavy";
+    congClass = "red";
+  } else if (totalVehicles > 45) {
+    cong = "Moderate";
+    congClass = "yellow";
+  }
+
+  for (let r in state.vehicles) {
+    if (state.vehicles[r] > 30) hotspotsCount++;
+  }
+
+  const congEl = document.getElementById('congestion');
+  congEl.textContent = cong;
+  congEl.className = congClass;
+  document.getElementById('hotspots').textContent = `${hotspotsCount} hotspots detected`;
+
+  // Hotspots table
+  const roadNames = { 1: "Road 1 (North)", 2: "Road 2 (South)", 3: "Road 3 (East)", 4: "Road 4 (West)" };
+  const sortedRoads = Object.keys(state.vehicles).sort((a, b) => state.vehicles[b] - state.vehicles[a]);
+  const tableBody = document.getElementById('hotspotTable');
+  tableBody.innerHTML = sortedRoads.map(r => {
+    const cnt = state.vehicles[r];
+    const status = cnt > 35 ? '<span class="red">Heavy</span>' : (cnt > 20 ? '<span class="yellow">Moderate</span>' : '<span class="green">Smooth</span>');
+    return `<tr><td>${roadNames[r]}</td><td>${cnt}</td><td>${status}</td></tr>`;
+  }).join('');
+
+  // Update current inspection camera
+  const curr = state.activeJunction;
+  document.getElementById('camCount').textContent = state.vehicles[curr];
+
+  // Fluctuate Kernel CPU/Mem simulation
+  const cpu = Math.floor(Math.random() * 15) + 20 + Math.floor(totalVehicles * 0.2);
+  document.getElementById('cpuVal').textContent = `${cpu}%`;
+  document.getElementById('cpuBar').style.width = `${cpu}%`;
+}
+
+// Render Hourly Bar charts
+const hourlyData = [32, 45, 68, 88, 74, 58, 42, 65, 82, 54, 40, 58];
+document.getElementById('bars').innerHTML = hourlyData.map((v, i) => `
+  <div style="display:flex; align-items:center; gap:8px; margin:6px 0; font-size:12px;">
+    <span style="width:40px; color:var(--text-dim);">${i+1}:00</span>
+    <div class="bar" style="flex:1;">
+      <div class="fill" style="width:${v}%; background:${v > 75 ? 'var(--accent-red)' : (v > 50 ? 'var(--accent-yellow)' : 'var(--accent-green)')}"></div>
+    </div>
+    <span style="font-family:'JetBrains Mono'; width:35px; text-align:right;">${v}%</span>
+  </div>
+`).join('');
+
+// Initial load
+loadJunctionValues();
+updateUI();
+
+// Auto tick simulation loop
+setInterval(() => {
+  const targetRoad = Math.floor(Math.random() * 4) + 1;
+  const delta = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3);
+  const newVal = Math.max(2, Math.min(60, state.vehicles[targetRoad] + delta));
+  state.vehicles[targetRoad] = newVal;
+  document.getElementById(`v_road${targetRoad}`).value = newVal;
+  document.getElementById(`cnt_r${targetRoad}`).textContent = newVal;
+  updateUI();
+}, 3000);
+</script>
+</body>
+</html>
